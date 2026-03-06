@@ -1,8 +1,11 @@
+
+
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { User } from "@/lib/models/User";
 
+// POST /api/signup
 export async function POST(req: Request) {
   try {
     const { name, email, password } = await req.json();
@@ -30,6 +33,7 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }
