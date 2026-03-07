@@ -1,6 +1,7 @@
 "use client"
 
 import { MoreHorizontal, type LucideIcon } from "lucide-react"
+import Link from "next/link"
 
 import {
   DropdownMenu,
@@ -39,8 +40,17 @@ export function NavMain({
           <DropdownMenu key={item.title}>
             <SidebarMenuItem>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                {/* <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                   {item.title} <MoreHorizontal className="ml-auto" />
+                </SidebarMenuButton> */}
+                <SidebarMenuButton
+                  asChild
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <Link href={item.url}>
+                    {item.title}
+                    <MoreHorizontal className="ml-auto" />
+                  </Link>
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               {item.items?.length ? (

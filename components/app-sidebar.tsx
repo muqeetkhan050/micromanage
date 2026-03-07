@@ -1,6 +1,5 @@
 import * as React from "react"
 import { GalleryVerticalEnd } from "lucide-react"
-
 import { NavMain } from "@/components/nav-main"
 import { SidebarOptInForm } from "@/components/sidebar-opt-in-form"
 import {
@@ -19,7 +18,7 @@ const data = {
   navMain: [
     {
       title: "Raise an issue",
-      url: "#",
+      url: "/dashboard/raise-issue",
       // items: [
       //   {
       //     title: "Chat group",
@@ -33,7 +32,7 @@ const data = {
     },
     {
       title: "Chat group",
-      url: "#",
+      url: "/dashboard/chat",
       // items: [
       //   {
       //     title: "Routing",
@@ -88,7 +87,7 @@ const data = {
     },
     {
       title: "Clock in/Clock out",
-      url: "#",
+      url: "/dashboard/clock",
       // items: [
       //   {
       //     title: "Components",
@@ -116,32 +115,32 @@ const data = {
       //   },
       // ],
     },
-    {
-      title: "Architecture",
-      url: "#",
-      // items: [
-      //   {
-      //     title: "Accessibility",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Fast Refresh",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Next.js Compiler",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Supported Browsers",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Turbopack",
-      //     url: "#",
-      //   },
-      // ],
-    },
+    // {
+    //   title: "Articles",
+    //   url: "#",
+    //   // items: [
+    //   //   {
+    //   //     title: "Accessibility",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Fast Refresh",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Next.js Compiler",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Supported Browsers",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Turbopack",
+    //   //     url: "#",
+    //   //   },
+    //   // ],
+    // },
   ],
 }
 
