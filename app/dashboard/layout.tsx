@@ -7,11 +7,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-
-// export default function ourDashboardLayout({children}:{children: React.ReactNode}) {
-//     return ({children})
-// }
-
 export default function ourDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
