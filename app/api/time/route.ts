@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 import { connectDB } from "@/lib/db"
-// import { Time } from "@/lib/models/Time"
-import {Time} from '@lib/models/Time'
+import { Time } from "@/lib/models/Time"
 
 export async function GET() {
 
