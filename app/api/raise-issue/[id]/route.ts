@@ -1,72 +1,50 @@
-import {NextResponse} from 'next/server'
-import {connectDB} from '@/lib/db'
+
+import { NextResponse } from "next/server"
 import {Issue } from "@/lib/models/issue";
-
-
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await connectDB()
-
-    const deletedIssue = await Issue.findByIdAndDelete(params.id)
-
-    if (!deletedIssue) {
-      return NextResponse.json(
-        { message: "Issue not found" },
-        { status: 404 }
-      )
-    }
-
-    return NextResponse.json({
-      message: "Issue deleted successfully",
-    })
-  } catch (error) {
-    console.error("Delete error:", error)
-
-    return NextResponse.json(
-      { message: "Error deleting issue" },
-      { status: 500 }
-    )
-  }
-}
-
-
+import {connectDB} from "@/lib/db"
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } | Promise<{ id: string }> }
 ) {
   try {
-    const body = await req.json()
-    const { title, description } = body
-
+    const { params } = context
+    const { id } = await params 
+    const { title, description } = await req.json()
     await connectDB()
 
-    const updatedIssue = await Issue.findByIdAndUpdate(
-      params.id,
+    const updated = await Issue.findByIdAndUpdate(
+      id,
       { title, description },
       { new: true }
     )
 
-    if (!updatedIssue) {
-      return NextResponse.json(
-        { message: "Issue not found" },
-        { status: 404 }
-      )
-    }
+    if (!updated) return NextResponse.json({ message: "Issue not found" }, { status: 404 })
 
-    return NextResponse.json({
-      message: "Issue updated successfully",
-      issue: updatedIssue,
-    })
+    return NextResponse.json(updated)
   } catch (error) {
-    console.error("Update error:", error)
+    console.error(error)
+    return NextResponse.json({ message: "Error updating issue" }, { status: 500 })
+  }
+}
 
-    return NextResponse.json(
-      { message: "Error updating issue" },
-      { status: 500 }
-    )
+export async function DELETE(
+  req: Request,
+  context: { params: { id: string } | Promise<{ id: string }> }
+) {
+  try {
+    const { params } = context
+    const { id } = await params 
+
+    await connectDB()
+    const deletedIssue = await Issue.findByIdAndDelete(id)
+
+    if (!deletedIssue)
+      return NextResponse.json({ message: "Issue not found" }, { status: 404 })
+
+    return NextResponse.json({ message: "Issue deleted successfully" })
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ message: "Error deleting issue" }, { status: 500 })
   }
 }
