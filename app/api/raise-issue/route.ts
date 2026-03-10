@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/db";
 import {Issue } from "@/lib/models/issue";
 
 
+
+
 export async function POST(req:Request){
     try{
         const {title, description} =await req.json();
