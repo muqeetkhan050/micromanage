@@ -1,3 +1,4 @@
+"use client"
 import * as React from "react"
 import { GalleryVerticalEnd } from "lucide-react"
 import { NavMain } from "@/components/nav-main"
@@ -106,21 +107,21 @@ const data = {
     // },
      {
       title: "Profile",
-      url: "#",
+      url: "/dashboard/profile",
   
 
     }, 
          {
       title: "Actions",
-      url: "#",
+      url: "/dashboard/actions",
        items: [
         {
           title: "Accessibility",
-          url: "#",
+          url: "/dashboard/actions/Accessibility",
         },
         {
           title: "Fast Refresh",
-          url: "#",
+          url: "/dashboard/actions/fast",
         },
       ],
 

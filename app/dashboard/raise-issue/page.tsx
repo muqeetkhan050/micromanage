@@ -15,8 +15,9 @@ export default function RaiseIssuePage() {
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
   const [issues, setIssues] = useState<Issue[]>([])
-
-  // fetch issues when page loads
+  
+  
+  
   const fetchIssues = async () => {
     const res = await fetch('/api/raise-issue')
     const data = await res.json()
