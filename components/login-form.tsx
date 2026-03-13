@@ -1,7 +1,7 @@
 
 
 "use client"
-import {useRouter} from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -26,25 +26,32 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
 
-  const [email,setEmail] = useState("")
-  const [password,setPassword] = useState("")
-  const router=useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const router = useRouter()
 
-  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    const res = await fetch("/api/login",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
       },
-      body:JSON.stringify({email,password})
+      body: JSON.stringify({ email, password })
     })
 
-    const data = await res.json()
+    // const data = await res.json()
 
-    alert(data.message)
-    router.push('/dashboard')
+    // alert(data.message)
+    // router.push('/dashboard')
+    const data = await res.json()
+    if (res.ok) {
+      localStorage.setItem("token", data.token)
+      router.push('/dashboard')
+    } else {
+      alert(data.message)
+    }
   }
 
   return (
@@ -84,7 +91,7 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   value={email}
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </Field>
@@ -106,7 +113,7 @@ export function LoginForm({
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e)=>setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </Field>

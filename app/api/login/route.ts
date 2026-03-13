@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import { User } from "@/lib/models/User";
+import { generateToken } from "@/lib/jwt";
 
 export async function POST(req: Request) {
   try {
@@ -25,8 +26,11 @@ export async function POST(req: Request) {
       );
     }
 
+
+    const token=generateToken(user._id.toString())
+
     return NextResponse.json(
-      { message: "Login successful" },
+      { message: "Login successful" , token, userId:user._id},
       { status: 200 }
     );
   } catch (error) {
