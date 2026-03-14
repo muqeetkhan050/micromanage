@@ -18,7 +18,7 @@ export default function Page() {
             orientation="vertical"
             className="mr-2 data-[orientation=vertical]:h-4"
           />
-          <h1 className="text-lg font-semibold">Dashboard</h1>
+          {/* <h1 className="text-lg font-semibold">Dashboard</h1> */}
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">

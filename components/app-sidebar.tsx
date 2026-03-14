@@ -18,7 +18,7 @@ import {
 const data = {
   navMain: [
     {
-      title: "Raise an issue",
+      title: "Raise Issue",
       url: "/dashboard/raise-issue",
       // items: [
       //   {
@@ -112,16 +112,16 @@ const data = {
 
     }, 
          {
-      title: "Actions",
+      title: "Personal",
       url: "/dashboard/actions",
        items: [
         {
-          title: "Accessibility",
+          title: "Notes",
           url: "/dashboard/actions/Accessibility",
         },
         {
-          title: "Fast Refresh",
-          url: "/dashboard/actions/fast",
+          title: "Articles",
+          url: "/dashboard/actions/notes",
         },
       ],
 

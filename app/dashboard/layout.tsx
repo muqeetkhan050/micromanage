@@ -1,6 +1,7 @@
 
 import { AppSidebar } from "@/components/app-sidebar"
 import { Separator } from "@/components/ui/separator"
+import {Toaster} from 'sonner'
 import {
   SidebarInset,
   SidebarProvider,
@@ -22,6 +23,7 @@ export default function ourDashboardLayout({ children }: { children: React.React
         </header>
 
         {children}  {/* ← page content renders here */}
+          <Toaster />
 
       </SidebarInset>
     </SidebarProvider>
