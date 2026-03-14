@@ -32,60 +32,60 @@ const data = {
       // ],
     },
     {
-      title: "Chat group",
-      url: "/dashboard/chat",
-      // items: [
-      //   {
-      //     title: "Routing",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Data Fetching",
-      //     url: "#",
-      //     isActive: true,
-      //   },
-      //   {
-      //     title: "Rendering",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Caching",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Styling",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Optimizing",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Configuring",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Testing",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Authentication",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Deploying",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Upgrading",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Examples",
-      //     url: "#",
-      //   },
-      // ],
-    },
+      title: "Personal Agent",
+      url: "/dashboard/chat"},
+    //   // items: [
+    //   //   {
+    //   //     title: "Routing",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Data Fetching",
+    //   //     url: "#",
+    //   //     isActive: true,
+    //   //   },
+    //   //   {
+    //   //     title: "Rendering",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Caching",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Styling",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Optimizing",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Configuring",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Testing",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Authentication",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Deploying",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Upgrading",
+    //   //     url: "#",
+    //   //   },
+    //   //   {
+    //   //     title: "Examples",
+    //   //     url: "#",
+    //   //   },
+    //   // ],
+    // },
     {
       title: "Clock in/Clock out",
       url: "/dashboard/clock",
