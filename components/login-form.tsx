@@ -58,7 +58,7 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
           <CardDescription>
-            Login with your Apple or Google account
+            Login with your Github or Slack account
           </CardDescription>
         </CardHeader>
 
@@ -69,11 +69,11 @@ export function LoginForm({
 
               <Field>
                 <Button variant="outline" type="button">
-                  Login with Apple
+                  Login with Github
                 </Button>
 
                 <Button variant="outline" type="button">
-                  Login with Google
+                  Login with Slack
                 </Button>
               </Field>
 
