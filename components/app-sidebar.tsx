@@ -32,8 +32,8 @@ const data = {
       // ],
     },
     {
-      title: "Personal Agent",
-      url: "/dashboard/chat"},
+      title: "Onboarding",
+      url: "/dashboard/onboarding"},
     //   // items: [
     //   //   {
     //   //     title: "Routing",

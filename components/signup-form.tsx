@@ -1,8 +1,9 @@
 
 
 "use client"
-
+import { useRouter } from "next/navigation"   // add this
 import { useState } from "react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,32 +25,58 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter() 
 
   const [name,setName] = useState("")
   const [email,setEmail] = useState("")
   const [password,setPassword] = useState("")
   const [confirmPassword,setConfirmPassword] = useState("")
 
-  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
-    e.preventDefault()
+  // const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
+  //   e.preventDefault()
 
-    if(password !== confirmPassword){
-      alert("Passwords do not match")
-      return
-    }
+  //   if(password !== confirmPassword){
+  //     alert("Passwords do not match")
+  //     return
+  //   }
 
-    const res = await fetch("/api/signup",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({name,email,password})
-    })
+  //   const res = await fetch("/api/signup",{
+  //     method:"POST",
+  //     headers:{
+  //       "Content-Type":"application/json"
+  //     },
+  //     body:JSON.stringify({name,email,password})
+  //   })
 
-    const data = await res.json()
+  //   const data = await res.json()
 
+  //   alert(data.message)
+  // }
+
+  // SignupForm.tsx - only change the handleSubmit function
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match")
+    return
+  }
+
+  const res = await fetch("/api/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  })
+
+  const data = await res.json()
+
+  if (res.ok) {
+    // After signup, go to login so they can sign in
+    router.push("/login")
+  } else {
     alert(data.message)
   }
+}
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
