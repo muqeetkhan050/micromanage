@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import OrganisationForm from '@/components/OrganisationForm'
 
 export default function OnboardingPage() {
   const [orgName, setOrgName] = useState("")
@@ -71,6 +72,7 @@ export default function OnboardingPage() {
             <CardTitle className="text-base">Join via invite</CardTitle>
             <CardDescription>
               Ask a colleague to send you an invite link. Opening it will add you to their organisation automatically.
+              <OrganisationForm/>
             </CardDescription>
           </CardHeader>
         </Card>
