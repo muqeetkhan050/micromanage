@@ -28,6 +28,7 @@ interface Issue {
   title: string
   description: string
   createdAt: string
+  assignedTo?: string
 }
 
 interface User {
@@ -36,7 +37,6 @@ interface User {
 }
 
 export default function RaiseIssuePage() {
-
   const [issues, setIssues] = useState<Issue[]>([])
   const [users, setUsers] = useState<User[]>([])
 
@@ -55,20 +55,15 @@ export default function RaiseIssuePage() {
     try {
       const res = await fetch("/api/raise-issue")
       const data = await res.json()
-
       if (!res.ok) {
         setError(data.message ?? "Failed to load issues")
         setIssues([])
         return
       }
-
       if (Array.isArray(data)) {
         setIssues(data)
         setError("")
-      } else {
-        setIssues([])
-      }
-
+      } else setIssues([])
     } catch (err) {
       console.error(err)
       setIssues([])
@@ -80,9 +75,7 @@ export default function RaiseIssuePage() {
     try {
       const res = await fetch("/api/org-users")
       const data = await res.json()
-      if (Array.isArray(data)) {
-        setUsers(data)
-      }
+      if (Array.isArray(data)) setUsers(data)
     } catch (err) {
       console.error(err)
     }
@@ -111,13 +104,11 @@ export default function RaiseIssuePage() {
         toast.error(data?.message || "Failed to create issue")
         return
       }
-
       setNewTitle("")
       setNewDescription("")
       setAssignedUser("")
       fetchIssues()
       toast.success("Issue created successfully")
-
     } catch (err) {
       console.error(err)
       toast.error("Failed to create issue")
@@ -125,8 +116,8 @@ export default function RaiseIssuePage() {
   }
 
   /* ---------------- ASSIGN ISSUE ---------------- */
-  const assignIssue = async (issueId: string) => {
-    if (!assignedUser) {
+  const assignIssue = async (issueId: string, userId: string) => {
+    if (!userId) {
       toast.error("Select user first")
       return
     }
@@ -134,7 +125,7 @@ export default function RaiseIssuePage() {
       const res = await fetch("/api/assign-issue", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ issueId, userId: assignedUser })
+        body: JSON.stringify({ issueId, userId })
       })
       if (!res.ok) throw new Error("Assign failed")
       toast.success("Issue assigned")
@@ -236,6 +227,7 @@ export default function RaiseIssuePage() {
           <TableRow>
             <TableHead>Title</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Assign</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -244,10 +236,22 @@ export default function RaiseIssuePage() {
             <TableRow key={issue._id}>
               <TableCell>{issue.title}</TableCell>
               <TableCell>{issue.description}</TableCell>
-              <TableCell className="text-right space-x-2">
-                {/* ASSIGN BUTTON */}
-                <Button className="bg-black text-white" onClick={() => assignIssue(issue._id)}>Assign</Button>
 
+              {/* ROW-LEVEL ASSIGN */}
+              <TableCell>
+                <select
+                  value={issue.assignedTo || ""}
+                  onChange={(e) => assignIssue(issue._id, e.target.value)}
+                  className="border p-1 rounded"
+                >
+                  <option value="">Assign user</option>
+                  {users.map((user) => (
+                    <option key={user._id} value={user._id}>{user.name}</option>
+                  ))}
+                </select>
+              </TableCell>
+
+              <TableCell className="text-right space-x-2">
                 {/* EDIT BUTTON */}
                 <Button className="bg-black text-white" onClick={() => {
                   setEditingIssue(issue)
