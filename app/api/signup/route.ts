@@ -1,10 +1,7 @@
-
-
-
-import { NextResponse } from "next/server"
-import bcrypt from "bcryptjs"
-import { connectDB } from "@/lib/db"
-import { User } from "@/lib/models/User"
+import { NextResponse } from 'next/server'
+import bcrypt from 'bcryptjs'
+import { connectDB } from '@/lib/db'
+import { User } from '@/lib/models/User'
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +11,10 @@ export async function POST(req: Request) {
 
     const existingUser = await User.findOne({ email })
     if (existingUser) {
-      return NextResponse.json({ message: "User already exists" }, { status: 400 })
+      return NextResponse.json(
+        { message: 'User already exists' },
+        { status: 400 }
+      )
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
@@ -23,13 +23,19 @@ export async function POST(req: Request) {
       name,
       email,
       password: hashedPassword,
-      role: "MEMBER",
-      organisationId: null,   // they'll create/join an org after signup
+      role: 'MEMBER',
+      organisationId: null, // they'll create/join an org after signup
     })
 
-    return NextResponse.json({ message: "User created successfully" }, { status: 201 })
+    return NextResponse.json(
+      { message: 'User created successfully' },
+      { status: 201 }
+    )
   } catch (error) {
     console.error(error)
-    return NextResponse.json({ message: "Something went wrong" }, { status: 500 })
+    return NextResponse.json(
+      { message: 'Something went wrong' },
+      { status: 500 }
+    )
   }
 }

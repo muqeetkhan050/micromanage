@@ -1,27 +1,37 @@
+'use client'
 
-
-"use client"
-
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 import {
-  Table, TableBody, TableCell, TableHead,
-  TableHeader, TableRow,
-} from "@/components/ui/table"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 import {
-  Dialog, DialogContent, DialogDescription,
-  DialogFooter, DialogHeader, DialogTitle,
-} from "@/components/ui/dialog"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
-import { Input } from "@/components/ui/input"
+import { Input } from '@/components/ui/input'
 
 import {
-  LineChart, Line, XAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer,
-} from "recharts"
+  LineChart,
+  Line,
+  XAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 
 interface Issue {
   _id: string
@@ -40,29 +50,29 @@ export default function RaiseIssuePage() {
   const [issues, setIssues] = useState<Issue[]>([])
   const [users, setUsers] = useState<User[]>([])
 
-  const [newTitle, setNewTitle] = useState("")
-  const [newDescription, setNewDescription] = useState("")
-  const [assignedUser, setAssignedUser] = useState("")
+  const [newTitle, setNewTitle] = useState('')
+  const [newDescription, setNewDescription] = useState('')
+  const [assignedUser, setAssignedUser] = useState('')
 
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null)
-  const [editTitle, setEditTitle] = useState("")
-  const [editDescription, setEditDescription] = useState("")
+  const [editTitle, setEditTitle] = useState('')
+  const [editDescription, setEditDescription] = useState('')
 
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
 
   /* ---------------- FETCH ISSUES ---------------- */
   const fetchIssues = async () => {
     try {
-      const res = await fetch("/api/raise-issue")
+      const res = await fetch('/api/raise-issue')
       const data = await res.json()
       if (!res.ok) {
-        setError(data.message ?? "Failed to load issues")
+        setError(data.message ?? 'Failed to load issues')
         setIssues([])
         return
       }
       if (Array.isArray(data)) {
         setIssues(data)
-        setError("")
+        setError('')
       } else setIssues([])
     } catch (err) {
       console.error(err)
@@ -73,7 +83,7 @@ export default function RaiseIssuePage() {
   /* ---------------- FETCH USERS ---------------- */
   const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/org-users")
+      const res = await fetch('/api/org-users')
       const data = await res.json()
       if (Array.isArray(data)) setUsers(data)
     } catch (err) {
@@ -90,49 +100,49 @@ export default function RaiseIssuePage() {
   const handleCreateSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     try {
-      const res = await fetch("/api/raise-issue", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/raise-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newTitle,
           description: newDescription,
-          assignedTo: assignedUser || null
-        })
+          assignedTo: assignedUser || null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
-        toast.error(data?.message || "Failed to create issue")
+        toast.error(data?.message || 'Failed to create issue')
         return
       }
-      setNewTitle("")
-      setNewDescription("")
-      setAssignedUser("")
+      setNewTitle('')
+      setNewDescription('')
+      setAssignedUser('')
       fetchIssues()
-      toast.success("Issue created successfully")
+      toast.success('Issue created successfully')
     } catch (err) {
       console.error(err)
-      toast.error("Failed to create issue")
+      toast.error('Failed to create issue')
     }
   }
 
   /* ---------------- ASSIGN ISSUE ---------------- */
   const assignIssue = async (issueId: string, userId: string) => {
     if (!userId) {
-      toast.error("Select user first")
+      toast.error('Select user first')
       return
     }
     try {
-      const res = await fetch("/api/assign-issue", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ issueId, userId })
+      const res = await fetch('/api/assign-issue', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ issueId, userId }),
       })
-      if (!res.ok) throw new Error("Assign failed")
-      toast.success("Issue assigned")
+      if (!res.ok) throw new Error('Assign failed')
+      toast.success('Issue assigned')
       fetchIssues()
     } catch (err) {
       console.error(err)
-      toast.error("Failed to assign issue")
+      toast.error('Failed to assign issue')
     }
   }
 
@@ -142,41 +152,44 @@ export default function RaiseIssuePage() {
     if (!editingIssue) return
     try {
       const res = await fetch(`/api/raise-issue/${editingIssue._id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: editTitle,
-          description: editDescription
-        })
+          description: editDescription,
+        }),
       })
-      if (!res.ok) throw new Error("Update failed")
+      if (!res.ok) throw new Error('Update failed')
       setEditingIssue(null)
       fetchIssues()
-      toast.success("Issue updated")
+      toast.success('Issue updated')
     } catch (err) {
       console.error(err)
-      toast.error("Update failed")
+      toast.error('Update failed')
     }
   }
 
   /* ---------------- DELETE ISSUE ---------------- */
   const handleDelete = async (id: string) => {
     try {
-      const res = await fetch(`/api/raise-issue/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Delete failed")
+      const res = await fetch(`/api/raise-issue/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Delete failed')
       fetchIssues()
-      toast.success("Issue deleted")
+      toast.success('Issue deleted')
     } catch (err) {
       console.error(err)
-      toast.error("Delete failed")
+      toast.error('Delete failed')
     }
   }
 
   /* ---------------- CHART DATA ---------------- */
   const chartData = [...issues]
-    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    .sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
     .reduce((acc: { date: string; count: number }[], curr) => {
-      const date = new Date(curr.createdAt).toLocaleDateString("en-GB")
+      const date = new Date(curr.createdAt).toLocaleDateString('en-GB')
       const existing = acc.find((item) => item.date === date)
       if (existing) existing.count += 1
       else acc.push({ date, count: 1 })
@@ -185,7 +198,6 @@ export default function RaiseIssuePage() {
 
   return (
     <div className="flex flex-col gap-6 p-6 w-full">
-
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-md">
           {error}
@@ -193,7 +205,10 @@ export default function RaiseIssuePage() {
       )}
 
       {/* ---------------- CREATE ISSUE FORM ---------------- */}
-      <form onSubmit={handleCreateSubmit} className="flex flex-col gap-4 bg-white p-6 rounded-md shadow-md">
+      <form
+        onSubmit={handleCreateSubmit}
+        className="flex flex-col gap-4 bg-white p-6 rounded-md shadow-md"
+      >
         <h1 className="text-xl font-bold">Raise Issue</h1>
         <Input
           value={newTitle}
@@ -215,10 +230,14 @@ export default function RaiseIssuePage() {
         >
           <option value="">Assign user</option>
           {users.map((user) => (
-            <option key={user._id} value={user._id}>{user.name}</option>
+            <option key={user._id} value={user._id}>
+              {user.name}
+            </option>
           ))}
         </select>
-        <Button type="submit" className="bg-black text-white">Submit Issue</Button>
+        <Button type="submit" className="bg-black text-white">
+          Submit Issue
+        </Button>
       </form>
 
       {/* ---------------- ISSUES TABLE ---------------- */}
@@ -240,39 +259,71 @@ export default function RaiseIssuePage() {
               {/* ROW-LEVEL ASSIGN */}
               <TableCell>
                 <select
-                  value={issue.assignedTo || ""}
+                  value={issue.assignedTo || ''}
                   onChange={(e) => assignIssue(issue._id, e.target.value)}
                   className="border p-1 rounded"
                 >
                   <option value="">Assign user</option>
                   {users.map((user) => (
-                    <option key={user._id} value={user._id}>{user.name}</option>
+                    <option key={user._id} value={user._id}>
+                      {user.name}
+                    </option>
                   ))}
                 </select>
               </TableCell>
 
               <TableCell className="text-right space-x-2">
                 {/* EDIT BUTTON */}
-                <Button className="bg-black text-white" onClick={() => {
-                  setEditingIssue(issue)
-                  setEditTitle(issue.title)
-                  setEditDescription(issue.description)
-                }}>Edit</Button>
+                <Button
+                  className="bg-black text-white"
+                  onClick={() => {
+                    setEditingIssue(issue)
+                    setEditTitle(issue.title)
+                    setEditDescription(issue.description)
+                  }}
+                >
+                  Edit
+                </Button>
 
                 {/* EDIT MODAL */}
                 {editingIssue && editingIssue._id === issue._id && (
-                  <Dialog open={true} onOpenChange={(open) => !open && setEditingIssue(null)}>
+                  <Dialog
+                    open={true}
+                    onOpenChange={(open) => !open && setEditingIssue(null)}
+                  >
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Edit Issue</DialogTitle>
-                        <DialogDescription>Update title and description</DialogDescription>
+                        <DialogDescription>
+                          Update title and description
+                        </DialogDescription>
                       </DialogHeader>
-                      <form onSubmit={handleEditSubmit} className="flex flex-col gap-4">
-                        <Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required />
-                        <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} className="border p-2 rounded h-32" required />
+                      <form
+                        onSubmit={handleEditSubmit}
+                        className="flex flex-col gap-4"
+                      >
+                        <Input
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          required
+                        />
+                        <textarea
+                          value={editDescription}
+                          onChange={(e) => setEditDescription(e.target.value)}
+                          className="border p-2 rounded h-32"
+                          required
+                        />
                         <DialogFooter className="flex justify-end gap-2">
-                          <Button type="button" variant="secondary" onClick={() => setEditingIssue(null)}>Cancel</Button>
-                          <Button type="submit" className="bg-black text-white">Save</Button>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => setEditingIssue(null)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" className="bg-black text-white">
+                            Save
+                          </Button>
                         </DialogFooter>
                       </form>
                     </DialogContent>
@@ -280,7 +331,12 @@ export default function RaiseIssuePage() {
                 )}
 
                 {/* DELETE BUTTON */}
-                <Button className="bg-black text-white" onClick={() => handleDelete(issue._id)}>Delete</Button>
+                <Button
+                  className="bg-black text-white"
+                  onClick={() => handleDelete(issue._id)}
+                >
+                  Delete
+                </Button>
               </TableCell>
             </TableRow>
           ))}
@@ -295,7 +351,12 @@ export default function RaiseIssuePage() {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="date" />
             <Tooltip />
-            <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="#8884d8"
+              strokeWidth={2}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

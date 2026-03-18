@@ -1,14 +1,17 @@
-
-import { AppSidebar } from "@/components/app-sidebar"
-import { Separator } from "@/components/ui/separator"
-import {Toaster} from 'sonner'
+import { AppSidebar } from '@/components/app-sidebar'
+import { Separator } from '@/components/ui/separator'
+import { Toaster } from 'sonner'
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar'
 
-export default function ourDashboardLayout({ children }: { children: React.ReactNode }) {
+export default function ourDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -21,10 +24,8 @@ export default function ourDashboardLayout({ children }: { children: React.React
           />
           <h1 className="text-lg font-semibold">Dashboard</h1>
         </header>
-
-        {children}  {/* ← page content renders here */}
-          <Toaster />
-
+        {children} {/* ← page content renders here */}
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   )

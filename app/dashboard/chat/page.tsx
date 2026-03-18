@@ -1,8 +1,20 @@
-export default function ChatPage() {
+// app/dashboard/chat/page.tsx
+import ChatWindow from "@/components/ChatWindow"
+import { auth } from "@/lib/auth"
+
+export default async function ChatPage() {
+  const session = await auth()
+
+  if (!session) return <div>Please log in</div>
+
+  const orgId = session.user.organisationId
+  const userId = session.user.id
+  const userName = session.user.name
+
   return (
-    <div>
-      <h1 className="text-xl font-bold">Chat Group</h1>
-      <p>Group chat will appear here.</p>
+    <div className="p-6">
+      <h1 className="text-xl font-bold mb-4">Organization Chat</h1>
+      <ChatWindow orgId={orgId} userId={userId} userName={userName} />
     </div>
   )
-}
+}s

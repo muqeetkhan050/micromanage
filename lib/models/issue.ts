@@ -1,5 +1,3 @@
-
-
 // import mongoose from "mongoose";
 
 // const issueSchema = new mongoose.Schema({
@@ -39,8 +37,7 @@
 // mongoose.models.Issue ||
 // mongoose.model("Issue", issueSchema)
 
-
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const issueSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -48,18 +45,18 @@ const issueSchema = new mongoose.Schema({
 
   organizationId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Organisation",
+    ref: 'Organisation',
     required: true,
   },
 
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
   },
 
   assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User',
     default: null,
   },
 
@@ -67,7 +64,7 @@ const issueSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+})
 
 export const Issue =
-  mongoose.models.Issue || mongoose.model("Issue", issueSchema);
+  mongoose.models.Issue || mongoose.model('Issue', issueSchema)

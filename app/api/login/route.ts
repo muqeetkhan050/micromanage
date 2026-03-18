@@ -26,7 +26,6 @@
 //       );
 //     }
 
-
 //     const token=generateToken(user._id.toString())
 
 //     return NextResponse.json(

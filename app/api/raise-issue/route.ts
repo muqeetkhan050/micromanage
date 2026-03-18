@@ -1,35 +1,33 @@
-
-
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import { Issue } from "@/lib/models/issue";
-import { auth } from "@/lib/auth";
+import { NextResponse } from 'next/server'
+import { connectDB } from '@/lib/db'
+import { Issue } from '@/lib/models/issue'
+import { auth } from '@/lib/auth'
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
     if (!session.user.organisationId) {
       return NextResponse.json(
-        { message: "Join an organization first" },
+        { message: 'Join an organization first' },
         { status: 403 }
-      );
+      )
     }
 
-    const { title, description, assignedTo } = await req.json();
+    const { title, description, assignedTo } = await req.json()
 
     if (!title || !description) {
       return NextResponse.json(
-        { message: "Title and description required" },
+        { message: 'Title and description required' },
         { status: 400 }
-      );
+      )
     }
 
-    await connectDB();
+    await connectDB()
 
     const issue = await Issue.create({
       title,
@@ -38,43 +36,38 @@ export async function POST(req: Request) {
       organizationId: session.user.organisationId,
       createdBy: session.user.id,
       createdAt: new Date(),
-    });
+    })
 
-    return NextResponse.json(issue);
-
+    return NextResponse.json(issue)
   } catch (error) {
-    console.error("Create issue error:", error);
+    console.error('Create issue error:', error)
     return NextResponse.json(
-      { message: "Internal server error" },
+      { message: 'Internal server error' },
       { status: 500 }
-    );
+    )
   }
 }
 
 export async function GET() {
   try {
-    const session = await auth();
+    const session = await auth()
 
     if (!session?.user?.organisationId) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    await connectDB();
+    await connectDB()
 
     const issues = await Issue.find({
       organizationId: session.user.organisationId,
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: -1 })
 
-    return NextResponse.json(issues);
-
+    return NextResponse.json(issues)
   } catch (error) {
-    console.error(error);
+    console.error(error)
     return NextResponse.json(
-      { message: "Failed to fetch issues" },
+      { message: 'Failed to fetch issues' },
       { status: 500 }
-    );
+    )
   }
 }

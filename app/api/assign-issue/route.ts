@@ -1,5 +1,3 @@
-
-
 // import { NextResponse } from "next/server"
 // import { auth } from "@/lib/auth"
 // import mongoose from "mongoose"
@@ -52,26 +50,27 @@
 //   }
 // }
 // route.ts
-import { NextResponse } from "next/server";
-import { connectDB } from "@/lib/db";
-import {Issue} from "@/lib/models/issue";
+import { NextResponse } from 'next/server'
+import { connectDB } from '@/lib/db'
+import { Issue } from '@/lib/models/issue'
 
 export async function PATCH(req: Request) {
   try {
-    await connectDB();
-    const body = await req.json();
-    const { issueId, userId } = body;
+    await connectDB()
+    const body = await req.json()
+    const { issueId, userId } = body
 
     const updatedIssue = await Issue.findByIdAndUpdate(
       issueId,
       { assignedTo: userId },
       { new: true }
-    );
+    )
 
-    if (!updatedIssue) return NextResponse.json({ error: "Issue not found" }, { status: 404 });
-    return NextResponse.json(updatedIssue);
+    if (!updatedIssue)
+      return NextResponse.json({ error: 'Issue not found' }, { status: 404 })
+    return NextResponse.json(updatedIssue)
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Assign failed" }, { status: 500 });
+    console.error(err)
+    return NextResponse.json({ error: 'Assign failed' }, { status: 500 })
   }
 }

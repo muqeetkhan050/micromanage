@@ -1,24 +1,30 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 import OrganisationForm from '@/components/OrganisationForm'
 
 export default function OnboardingPage() {
-  const [orgName, setOrgName] = useState("")
+  const [orgName, setOrgName] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError("")
+    setError('')
 
-    const res = await fetch("/api/organisations", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const res = await fetch('/api/organisations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: orgName }),
     })
 
@@ -27,9 +33,9 @@ export default function OnboardingPage() {
     if (res.ok) {
       // Hard reload forces NextAuth to re-run jwt callback
       // which re-reads organisationId from MongoDB
-      window.location.href = "/dashboard"
+      window.location.href = '/dashboard'
     } else {
-      setError(data.message ?? "Something went wrong")
+      setError(data.message ?? 'Something went wrong')
       setLoading(false)
     }
   }
@@ -37,12 +43,12 @@ export default function OnboardingPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md flex flex-col gap-4">
-
         <Card>
           <CardHeader>
             <CardTitle>Create your organisation</CardTitle>
             <CardDescription>
-              You are not part of an organisation yet. Create one to get started.
+              You are not part of an organisation yet. Create one to get
+              started.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -55,7 +61,7 @@ export default function OnboardingPage() {
               />
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <Button type="submit" disabled={loading}>
-                {loading ? "Creating..." : "Create Organisation"}
+                {loading ? 'Creating...' : 'Create Organisation'}
               </Button>
             </form>
           </CardContent>
@@ -71,12 +77,12 @@ export default function OnboardingPage() {
           <CardHeader>
             <CardTitle className="text-base">Join via invite</CardTitle>
             <CardDescription>
-              Ask a colleague to send you an invite link. Opening it will add you to their organisation automatically.
-              <OrganisationForm/>
+              Ask a colleague to send you an invite link. Opening it will add
+              you to their organisation automatically.
+              <OrganisationForm />
             </CardDescription>
           </CardHeader>
         </Card>
-
       </div>
     </div>
   )

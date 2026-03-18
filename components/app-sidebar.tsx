@@ -1,8 +1,8 @@
-"use client"
-import * as React from "react"
-import { GalleryVerticalEnd } from "lucide-react"
-import { NavMain } from "@/components/nav-main"
-import { SidebarOptInForm } from "@/components/sidebar-opt-in-form"
+'use client'
+import * as React from 'react'
+import { GalleryVerticalEnd } from 'lucide-react'
+import { NavMain } from '@/components/nav-main'
+import { SidebarOptInForm } from '@/components/sidebar-opt-in-form'
 import {
   Sidebar,
   SidebarContent,
@@ -12,14 +12,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-
+} from '@/components/ui/sidebar'
 
 const data = {
   navMain: [
     {
-      title: "Raise Issue",
-      url: "/dashboard/raise-issue",
+      title: 'Raise Issue',
+      url: '/dashboard/raise-issue',
       // items: [
       //   {
       //     title: "Chat group",
@@ -32,8 +31,9 @@ const data = {
       // ],
     },
     {
-      title: "Onboarding",
-      url: "/dashboard/onboarding"},
+      title: 'Onboarding',
+      url: '/dashboard/onboarding',
+    },
     //   // items: [
     //   //   {
     //   //     title: "Routing",
@@ -87,9 +87,8 @@ const data = {
     //   // ],
     // },
     {
-      title: "Clock in/Clock out",
-      url: "/dashboard/clock",
-
+      title: 'Clock in/Clock out',
+      url: '/dashboard/clock',
     },
     // {
     //   title: "Articles",
@@ -105,27 +104,28 @@ const data = {
     //   //   },
     //   // ],
     // },
-     {
-      title: "Profile",
-      url: "/dashboard/profile",
-  
-
-    }, 
-         {
-      title: "Personal",
-      url: "/dashboard/actions",
-       items: [
+    {
+      title: 'Profile',
+      url: '/dashboard/profile',
+    },
+    {
+      title: 'Chat',
+      url: '/dashboard/chat',
+    },
+    {
+      title: 'Personal',
+      url: '/dashboard/actions',
+      items: [
         {
-          title: "Notes",
-          url: "/dashboard/actions/Accessibility",
+          title: 'Notes',
+          url: '/dashboard/actions/Accessibility',
         },
         {
-          title: "Articles",
-          url: "/dashboard/actions/notes",
+          title: 'Articles',
+          url: '/dashboard/actions/notes',
         },
       ],
-
-    }, 
+    },
   ],
 }
 

@@ -1,5 +1,3 @@
-
-
 // import mongoose, { Schema, models } from "mongoose"
 
 // const userSchema = new Schema(
@@ -16,7 +14,7 @@
 
 // export const User = models.User || mongoose.model("User", userSchema)
 
-import mongoose, { Schema, models } from "mongoose";
+import mongoose, { Schema, models } from 'mongoose'
 
 const userSchema = new Schema(
   {
@@ -26,16 +24,16 @@ const userSchema = new Schema(
     image: String,
     role: {
       type: String,
-      enum: ["ADMIN", "MEMBER"],
-      default: "MEMBER",
+      enum: ['ADMIN', 'MEMBER'],
+      default: 'MEMBER',
     },
     organisationId: {
       type: Schema.Types.ObjectId,
-      ref: "Organisation",
+      ref: 'Organisation',
       default: null,
     },
   },
   { timestamps: true }
-);
+)
 
-export const User = models.User || mongoose.model("User", userSchema);
+export const User = models.User || mongoose.model('User', userSchema)

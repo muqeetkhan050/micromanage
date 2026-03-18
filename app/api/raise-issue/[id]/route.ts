@@ -1,7 +1,6 @@
-
-import { NextResponse } from "next/server"
-import {Issue } from "@/lib/models/issue";
-import {connectDB} from "@/lib/db"
+import { NextResponse } from 'next/server'
+import { Issue } from '@/lib/models/issue'
+import { connectDB } from '@/lib/db'
 
 export async function PATCH(
   req: Request,
@@ -9,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const { params } = context
-    const { id } = await params 
+    const { id } = await params
     const { title, description } = await req.json()
     await connectDB()
 
@@ -19,12 +18,16 @@ export async function PATCH(
       { new: true }
     )
 
-    if (!updated) return NextResponse.json({ message: "Issue not found" }, { status: 404 })
+    if (!updated)
+      return NextResponse.json({ message: 'Issue not found' }, { status: 404 })
 
     return NextResponse.json(updated)
   } catch (error) {
     console.error(error)
-    return NextResponse.json({ message: "Error updating issue" }, { status: 500 })
+    return NextResponse.json(
+      { message: 'Error updating issue' },
+      { status: 500 }
+    )
   }
 }
 
@@ -34,17 +37,20 @@ export async function DELETE(
 ) {
   try {
     const { params } = context
-    const { id } = await params 
+    const { id } = await params
 
     await connectDB()
     const deletedIssue = await Issue.findByIdAndDelete(id)
 
     if (!deletedIssue)
-      return NextResponse.json({ message: "Issue not found" }, { status: 404 })
+      return NextResponse.json({ message: 'Issue not found' }, { status: 404 })
 
-    return NextResponse.json({ message: "Issue deleted successfully" })
+    return NextResponse.json({ message: 'Issue deleted successfully' })
   } catch (error) {
     console.error(error)
-    return NextResponse.json({ message: "Error deleting issue" }, { status: 500 })
+    return NextResponse.json(
+      { message: 'Error deleting issue' },
+      { status: 500 }
+    )
   }
 }

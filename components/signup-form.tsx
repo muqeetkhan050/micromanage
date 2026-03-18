@@ -1,36 +1,34 @@
+'use client'
+import { useRouter } from 'next/navigation' // add this
+import { useState } from 'react'
 
-
-"use client"
-import { useRouter } from "next/navigation"   // add this
-import { useState } from "react"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from '@/components/ui/field'
+import { Input } from '@/components/ui/input'
 
 export function SignupForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
-  const router = useRouter() 
+}: React.ComponentProps<'div'>) {
+  const router = useRouter()
 
-  const [name,setName] = useState("")
-  const [email,setEmail] = useState("")
-  const [password,setPassword] = useState("")
-  const [confirmPassword,setConfirmPassword] = useState("")
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   // const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
   //   e.preventDefault()
@@ -54,32 +52,32 @@ export function SignupForm({
   // }
 
   // SignupForm.tsx - only change the handleSubmit function
-const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match")
-    return
+    if (password !== confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    })
+
+    const data = await res.json()
+
+    if (res.ok) {
+      // After signup, go to login so they can sign in
+      router.push('/login')
+    } else {
+      alert(data.message)
+    }
   }
-
-  const res = await fetch("/api/signup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
-  })
-
-  const data = await res.json()
-
-  if (res.ok) {
-    // After signup, go to login so they can sign in
-    router.push("/login")
-  } else {
-    alert(data.message)
-  }
-}
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
@@ -91,7 +89,6 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         <CardContent>
           <form onSubmit={handleSubmit}>
             <FieldGroup>
-
               <Field>
                 <FieldLabel htmlFor="name">Full Name</FieldLabel>
                 <Input
@@ -99,7 +96,7 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   type="text"
                   placeholder="John Doe"
                   value={name}
-                  onChange={(e)=>setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value)}
                   required
                 />
               </Field>
@@ -111,21 +108,20 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   type="email"
                   placeholder="m@example.com"
                   value={email}
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </Field>
 
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
-
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
                     <Input
                       id="password"
                       type="password"
                       value={password}
-                      onChange={(e)=>setPassword(e.target.value)}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                   </Field>
@@ -138,11 +134,10 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       id="confirm-password"
                       type="password"
                       value={confirmPassword}
-                      onChange={(e)=>setConfirmPassword(e.target.value)}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
                       required
                     />
                   </Field>
-
                 </Field>
 
                 <FieldDescription>
@@ -159,14 +154,13 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                   Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>
               </Field>
-
             </FieldGroup>
           </form>
         </CardContent>
       </Card>
 
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <a href="#">Terms of Service</a>{" "}
+        By clicking continue, you agree to our <a href="#">Terms of Service</a>{' '}
         and <a href="#">Privacy Policy</a>.
       </FieldDescription>
     </div>

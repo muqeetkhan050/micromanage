@@ -1,4 +1,4 @@
-import mongoose, { Schema, models } from "mongoose"
+import mongoose, { Schema, models } from 'mongoose'
 
 const organisationSchema = new Schema(
   {
@@ -12,4 +12,4 @@ const organisationSchema = new Schema(
 )
 
 export const Organisation =
-  models.Organisation || mongoose.model("Organisation", organisationSchema)
+  models.Organisation || mongoose.model('Organisation', organisationSchema)
