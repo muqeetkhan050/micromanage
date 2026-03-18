@@ -1,11 +1,7 @@
-
-
-
-"use client"
+'use client'
 
 import { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
-/* ---------------- TYPES ---------------- */
 
 interface Message {
   _id?: string
@@ -20,11 +16,10 @@ interface ChatWindowProps {
   userName: string
 }
 
-/* ---------------- SOCKET ---------------- */
+
 
 let socket: typeof Socket | null = null
 
-/* ---------------- COMPONENT ---------------- */
 
 export default function ChatWindow({
   orgId,
@@ -35,7 +30,7 @@ export default function ChatWindow({
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
 
-  /* ---------------- CONNECT SOCKET ---------------- */
+ 
   useEffect(() => {
     socket = io("/api/chat/socket")
 
@@ -45,8 +40,6 @@ export default function ChatWindow({
       // join organisation room
       socket?.emit("join-org", orgId)
     })
-
-    /* RECEIVE MESSAGE */
     socket.on("receive-message", (msg: Message) => {
       setMessages((prev) => [...prev, msg])
     })
@@ -56,7 +49,6 @@ export default function ChatWindow({
     }
   }, [orgId])
 
-  /* ---------------- SEND MESSAGE ---------------- */
   const sendMessage = () => {
     if (!newMessage.trim() || !socket) return
 
@@ -70,11 +62,10 @@ export default function ChatWindow({
     setNewMessage("")
   }
 
-  /* ---------------- UI ---------------- */
+
   return (
     <div className="flex flex-col h-96 border rounded p-2">
-      
-      {/* MESSAGES */}
+
       <div className="flex-1 overflow-y-auto mb-2">
         {messages.map((msg, index) => (
           <div key={index}>
@@ -83,7 +74,6 @@ export default function ChatWindow({
         ))}
       </div>
 
-      {/* INPUT */}
       <div className="flex gap-2">
         <input
           value={newMessage}
