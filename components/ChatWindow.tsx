@@ -24,26 +24,27 @@
 //   const socketRef = useRef<ReturnType<typeof io> | null>(null)
 
 //   useEffect(() => {
-//     fetch("/api/socket").then(() => {
-//       const socket = io(window.location.origin, { path: "/api/socket" })
-//       socketRef.current = socket
+//     // connects to separate socket server on port 3001
+//     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
+//       transports: ["websocket"],
+//     })
+//     socketRef.current = socket
 
-//       socket.on("connect", () => {
-//         console.log("Connected:", socket.id)
-//         socket.emit("join-org", orgId)
-//       })
+//     socket.on("connect", () => {
+//       console.log("Connected:", socket.id)
+//       socket.emit("join-org", orgId)
+//     })
 
-//       socket.on("receive-message", (msg: Message) => {
-//         setMessages((prev) => [...prev, msg])
-//       })
+//     socket.on("receive-message", (msg: Message) => {
+//       setMessages((prev) => [...prev, msg])
+//     })
 
-//       socket.on("connect_error", (err: Error) => {
-//         console.error("Connection error:", err.message)
-//       })
+//     socket.on("connect_error", (err: Error) => {
+//       console.error("Connection error:", err.message)
 //     })
 
 //     return () => {
-//       socketRef.current?.disconnect()
+//       socket.disconnect()
 //     }
 //   }, [orgId])
 
@@ -109,10 +110,29 @@ interface ChatWindowProps {
 export default function ChatWindow({ orgId, userId, userName }: ChatWindowProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [newMessage, setNewMessage] = useState("")
+  const [loading, setLoading] = useState(true)
   const socketRef = useRef<ReturnType<typeof io> | null>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Load previous messages from MongoDB on mount
   useEffect(() => {
-    // connects to separate socket server on port 3001
+    const fetchMessages = async () => {
+      try {
+        const res = await fetch(`/api/chat/messages?orgId=${orgId}`)
+        const data = await res.json()
+        setMessages(data)
+      } catch (error) {
+        console.error("Failed to load messages:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchMessages()
+  }, [orgId])
+
+  // Connect to socket server
+  useEffect(() => {
     const socket = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
       transports: ["websocket"],
     })
@@ -136,6 +156,11 @@ export default function ChatWindow({ orgId, userId, userName }: ChatWindowProps)
     }
   }, [orgId])
 
+  // Auto scroll to bottom when new message arrives
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
+
   const sendMessage = () => {
     if (!newMessage.trim() || !socketRef.current) return
 
@@ -152,11 +177,18 @@ export default function ChatWindow({ orgId, userId, userName }: ChatWindowProps)
   return (
     <div className="flex flex-col h-96 border rounded p-2">
       <div className="flex-1 overflow-y-auto mb-2">
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.senderName}:</strong> {msg.content}
-          </div>
-        ))}
+        {loading ? (
+          <div className="text-center text-gray-400 mt-4">Loading messages...</div>
+        ) : messages.length === 0 ? (
+          <div className="text-center text-gray-400 mt-4">No messages yet</div>
+        ) : (
+          messages.map((msg, index) => (
+            <div key={msg._id || index} className="mb-1">
+              <strong>{msg.senderName}:</strong> {msg.content}
+            </div>
+          ))
+        )}
+        <div ref={bottomRef} />
       </div>
       <div className="flex gap-2">
         <input
