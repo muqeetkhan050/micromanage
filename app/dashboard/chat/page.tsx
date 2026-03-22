@@ -1,4 +1,5 @@
-// 'use client'
+
+
 import ChatWindow from "@/components/ChatWindow"
 import { auth } from "@/lib/auth"
 
@@ -9,7 +10,6 @@ export default async function ChatPage() {
     return <div>Please log in with a valid organization account</div>
   }
 
-  // Extract with fallback for name only
   const orgId: string = session.user.organisationId
   const userId: string = session.user.id
   const userName: string = session.user.name ?? "Anonymous"
