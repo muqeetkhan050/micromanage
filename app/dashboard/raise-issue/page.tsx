@@ -1,3 +1,5 @@
+
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -23,6 +25,16 @@ import {
 } from '@/components/ui/dialog'
 
 import { Input } from '@/components/ui/input'
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 import {
   LineChart,
@@ -223,18 +235,24 @@ export default function RaiseIssuePage() {
           className="border p-2 rounded h-32"
           required
         />
-        <select
-          value={assignedUser}
-          onChange={(e) => setAssignedUser(e.target.value)}
-          className="border p-2 rounded"
-        >
-          <option value="">Assign user</option>
-          {users.map((user) => (
-            <option key={user._id} value={user._id}>
-              {user.name}
-            </option>
-          ))}
-        </select>
+
+        {/* SHADCN SELECT FOR CREATE FORM */}
+        <Select value={assignedUser} onValueChange={setAssignedUser}>
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Assign user" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Team Members</SelectLabel>
+              {users.map((user) => (
+                <SelectItem key={user._id} value={user._id}>
+                  {user.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
         <Button type="submit" className="bg-black text-white">
           Submit Issue
         </Button>
@@ -256,20 +274,26 @@ export default function RaiseIssuePage() {
               <TableCell>{issue.title}</TableCell>
               <TableCell>{issue.description}</TableCell>
 
-              {/* ROW-LEVEL ASSIGN */}
+              {/* ROW-LEVEL SHADCN SELECT */}
               <TableCell>
-                <select
+                <Select
                   value={issue.assignedTo || ''}
-                  onChange={(e) => assignIssue(issue._id, e.target.value)}
-                  className="border p-1 rounded"
+                  onValueChange={(userId) => assignIssue(issue._id, userId)}
                 >
-                  <option value="">Assign user</option>
-                  {users.map((user) => (
-                    <option key={user._id} value={user._id}>
-                      {user.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full max-w-48">
+                    <SelectValue placeholder="Assign user" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Team Members</SelectLabel>
+                      {users.map((user) => (
+                        <SelectItem key={user._id} value={user._id}>
+                          {user.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </TableCell>
 
               <TableCell className="text-right space-x-2">
