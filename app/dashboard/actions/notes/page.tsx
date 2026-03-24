@@ -53,11 +53,7 @@ export default function MyIssues() {
   const [issues, setIssues] = useState<any[]>([])
 
   useEffect(() => {
-    fetch('/api/my-issues', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
+    fetch('/api/my-issues')
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {

@@ -1,5 +1,9 @@
+
+
+
 import NextAuth from 'next-auth'
 import GitHub from 'next-auth/providers/github'
+import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { connectDB } from '@/lib/db'
@@ -14,6 +18,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID ?? '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
+    }),
+
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
     }),
 
     Credentials({
@@ -54,6 +63,29 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'github' || account?.provider === 'google') {
+        try {
+          await connectDB()
+          const existing = await User.findOne({ email: user.email })
+          if (!existing) {
+            await User.create({
+              name: user.name,
+              email: user.email,
+              image: user.image ?? null,
+              provider: account.provider,
+              role: 'MEMBER',
+              organisationId: null,
+            })
+          }
+        } catch (err) {
+          console.error('signIn callback error:', err)
+          return false
+        }
+      }
+      return true
+    },
+
     async jwt({ token, trigger, account }) {
       // Always re-fetch user from DB to get latest organisationId and role
       if (token.email) {
@@ -77,6 +109,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.githubAccessToken = account.access_token
       }
 
+      if (account?.provider === 'google') {
+        token.googleAccessToken = account.access_token
+      }
+
       return token
     },
 
@@ -93,5 +129,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     error: '/login',
   },
 })
-
-

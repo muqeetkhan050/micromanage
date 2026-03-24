@@ -1,25 +1,19 @@
-import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db'
 import { User } from '@/lib/models/User'
+import { auth } from '@/lib/auth'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'mysecretkey'
-
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const authHeader = req.headers.get('authorization')
+    const session = await auth()
 
-    if (!authHeader) {
+    if (!session?.user?.id) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
-    const token = authHeader.split(' ')[1]
-
-    const decoded: any = jwt.verify(token, JWT_SECRET)
-
     await connectDB()
 
-    const user = await User.findById(decoded.userId).select('-password')
+    const user = await User.findById(session.user.id).select('-password')
 
     if (!user) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 })
@@ -27,6 +21,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(user)
   } catch (error) {
-    return NextResponse.json({ message: 'Invalid token' }, { status: 401 })
+    return NextResponse.json({ message: 'Server error' }, { status: 500 })
   }
 }

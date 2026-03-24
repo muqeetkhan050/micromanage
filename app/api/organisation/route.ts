@@ -22,7 +22,9 @@ export async function POST(req: Request) {
       )
     }
 
-    const org = await Organisation.findOne({ name })
+    const org = await Organisation.findOne({
+      $or: [{ name }, { slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }],
+    })
 
     if (action === 'create') {
       if (org) {
@@ -32,7 +34,12 @@ export async function POST(req: Request) {
         )
       }
 
-      const newOrg = await Organisation.create({ name })
+      const slug = name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+
+      const newOrg = await Organisation.create({ name, slug })
 
       await User.findByIdAndUpdate(session.user.id, {
         organisationId: newOrg._id,

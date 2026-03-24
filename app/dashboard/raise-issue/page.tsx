@@ -37,9 +37,10 @@ import {
 } from '@/components/ui/select'
 
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
+  YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
@@ -195,18 +196,19 @@ export default function RaiseIssuePage() {
   }
 
   /* ---------------- CHART DATA ---------------- */
-  const chartData = [...issues]
-    .sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    )
-    .reduce((acc: { date: string; count: number }[], curr) => {
-      const date = new Date(curr.createdAt).toLocaleDateString('en-GB')
-      const existing = acc.find((item) => item.date === date)
-      if (existing) existing.count += 1
-      else acc.push({ date, count: 1 })
-      return acc
-    }, [])
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+
+  const chartData = Array.from({ length: daysInMonth }, (_, i) => {
+    const day = i + 1
+    const count = issues.filter((issue) => {
+      const d = new Date(issue.createdAt)
+      return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day
+    }).length
+    return { day: `${day}`, issues: count }
+  })
 
   return (
     <div className="flex flex-col gap-6 p-6 w-full">
@@ -369,19 +371,17 @@ export default function RaiseIssuePage() {
 
       {/* ---------------- CHART ---------------- */}
       <div className="bg-white p-6 rounded-md shadow-md">
-        <h2 className="text-lg font-semibold mb-4">Issues Over Time</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Issues Raised — {now.toLocaleString('default', { month: 'long', year: 'numeric' })}
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
+          <BarChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
+            <XAxis dataKey="day" fontSize={12} />
+            <YAxis allowDecimals={false} />
             <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="count"
-              stroke="#8884d8"
-              strokeWidth={2}
-            />
-          </LineChart>
+            <Bar dataKey="issues" fill="#8884d8" radius={[4, 4, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
