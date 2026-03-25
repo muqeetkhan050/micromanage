@@ -84,7 +84,7 @@ export default function ChatWindow({ orgId, userId, userName }: ChatWindowProps)
   }
 
   return (
-    <div className="flex flex-col h-[600px] bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <div className="flex flex-col h-150 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
 
       {/* Header */}
       <div className="bg-black text-white px-4 py-3 flex items-center gap-3">

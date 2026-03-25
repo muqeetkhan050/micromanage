@@ -1,5 +1,5 @@
 'use client'
-import { signIn } from 'next-auth/react'
+import { signIn, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -35,6 +35,8 @@ export function LoginForm({
     setLoading(true)
     setError('')
 
+    await signOut({ redirect: false })
+
     const res = await signIn('credentials', {
       email,
       password,
@@ -42,7 +44,7 @@ export function LoginForm({
     })
 
     if (res?.ok) {
-      router.push('/dashboard')
+      window.location.href = '/dashboard'  // full page reload — guarantees fresh session
     } else {
       setError('Invalid email or password')
     }

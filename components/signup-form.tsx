@@ -1,5 +1,5 @@
 'use client'
-import { useRouter } from 'next/navigation' // add this
+import { useRouter } from 'next/navigation' 
 import { useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -30,28 +30,7 @@ export function SignupForm({
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  // const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
-  //   e.preventDefault()
-
-  //   if(password !== confirmPassword){
-  //     alert("Passwords do not match")
-  //     return
-  //   }
-
-  //   const res = await fetch("/api/signup",{
-  //     method:"POST",
-  //     headers:{
-  //       "Content-Type":"application/json"
-  //     },
-  //     body:JSON.stringify({name,email,password})
-  //   })
-
-  //   const data = await res.json()
-
-  //   alert(data.message)
-  // }
-
-  // SignupForm.tsx - only change the handleSubmit function
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 

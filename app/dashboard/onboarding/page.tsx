@@ -22,10 +22,10 @@ export default function OnboardingPage() {
     setLoading(true)
     setError('')
 
-    const res = await fetch('/api/organisations', {
+    const res = await fetch('/api/organisation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: orgName }),
+      body: JSON.stringify({ name: orgName, action: 'create' }),
     })
 
     const data = await res.json()

@@ -27,7 +27,7 @@ export default function ChatPage() {
     })
 
     const data = await res.json()
-    setRecords(data)
+    if (Array.isArray(data)) setRecords(data)
     setClockIn('')
     setClockOut('')
   }
@@ -36,7 +36,7 @@ export default function ChatPage() {
   const loadRecords = async () => {
     const res = await fetch('/api/time')
     const data = await res.json()
-    setRecords(data)
+    if (Array.isArray(data)) setRecords(data)
   }
 
   useEffect(() => {

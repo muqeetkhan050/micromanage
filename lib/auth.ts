@@ -1,6 +1,4 @@
 
-
-
 import NextAuth from 'next-auth'
 import GitHub from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
@@ -38,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           const user = (await User.findOne({
             email: credentials.email,
-          }).lean()) as any
+          }).select('+password').lean()) as any
 
           if (!user || !user.password) return null
 

@@ -37,7 +37,8 @@ export default function OrganisationForm() {
           : `Joined organisation "${data.name}"!`
       )
 
-      setOrgName('')
+      // Reload so NextAuth jwt callback picks up the new organisationId
+      window.location.href = '/dashboard'
     } catch (err) {
       console.error(err)
       toast.error('Something went wrong')
