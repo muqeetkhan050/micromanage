@@ -49,20 +49,21 @@ export default function MyIssues() {
                         value={issue.status || 'not started yet'}
                         onChange={async (e) => {
                             const newStatus = e.target.value
-                            await fetch(`/api/issues/${issue._id}`, {
+                            const res = await fetch(`/api/issues/${issue._id}`, {
                                 method: 'PATCH',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ status: newStatus }),
                             })
-                            // Update local state so UI reflects the change
-                            setIssues((prev) =>
-                                prev.map((i) => (i._id === issue._id ? { ...i, status: newStatus } : i))
-                            )
+                            if (res.ok) {
+                                setIssues((prev) =>
+                                    prev.map((i) => (i._id === issue._id ? { ...i, status: newStatus } : i))
+                                )
+                            }
                         }}
                         className="mt-2 border rounded px-2 py-1"
                     >
                         <option value="not started yet">Not Started Yet</option>
-                        <option value="in progress">In Progress</option>
+                        <option value="in Progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
                 </div>

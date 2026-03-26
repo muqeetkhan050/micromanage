@@ -37,5 +37,8 @@ const issueSchema = new mongoose.Schema({
   },
 });
 
-export const Issue =
-  mongoose.models.Issue || mongoose.model("Issue", issueSchema);
+// Delete cached model so schema changes take effect in dev mode
+if (mongoose.models.Issue) {
+  delete mongoose.models.Issue;
+}
+export const Issue = mongoose.model("Issue", issueSchema);

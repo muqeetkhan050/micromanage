@@ -11,7 +11,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
 
   const { status } = await req.json()
 
-  if (!['not started yet', 'in progress', 'completed'].includes(status)) {
+  if (!['not started yet', 'in Progress', 'completed'].includes(status)) {
     return NextResponse.json({ message: 'Invalid status' }, { status: 400 })
   }
 

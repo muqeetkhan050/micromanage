@@ -3,6 +3,14 @@ import { connectDB } from '@/lib/db'
 import { Organisation } from '@/lib/models/Organisation'
 import { User } from '@/lib/models/User'
 import { auth } from '@/lib/auth'
+import {sendEmail} from '@/lib/email'
+
+
+
+
+
+
+
 
 export async function POST(req: Request) {
   try {
@@ -45,6 +53,21 @@ export async function POST(req: Request) {
         organisationId: newOrg._id,
       })
 
+      try {
+        await sendEmail(
+          session.user.email,
+          `Welcome to ${newOrg.name}!`,
+          `
+          <h1>Welcome to ${newOrg.name}!</h1>
+          <p>Hi ${session.user.name},</p>
+          <p>You've successfully created the organisation <strong>${newOrg.name}</strong>.</p>
+          <p>Start by inviting your team members and raising issues.</p>
+          `
+        )
+      } catch (e) {
+        console.error('Welcome email failed:', e)
+      }
+
       return NextResponse.json(newOrg)
     }
 
@@ -59,6 +82,21 @@ export async function POST(req: Request) {
       await User.findByIdAndUpdate(session.user.id, {
         organisationId: org._id,
       })
+
+      try {
+        await sendEmail(
+          session.user.email,
+          `Welcome to ${org.name}!`,
+          `
+          <h1>Welcome to ${org.name}!</h1>
+          <p>Hi ${session.user.name},</p>
+          <p>You've successfully joined the organisation <strong>${org.name}</strong>.</p>
+          <p>Check your dashboard to see assigned issues and collaborate with your team.</p>
+          `
+        )
+      } catch (e) {
+        console.error('Welcome email failed:', e)
+      }
 
       return NextResponse.json(org)
     }
