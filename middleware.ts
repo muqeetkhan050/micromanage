@@ -19,12 +19,12 @@ export default auth((req) => {
   if (
     session &&
     !session.user.organisationId &&
-    !pathname.startsWith('/onboarding') &&
+    !pathname.startsWith('/dashboard/onboarding') &&
     !pathname.startsWith('/invite') &&
     !pathname.startsWith('/api') &&
     !isPublic
   ) {
-    return NextResponse.redirect(new URL('/onboarding', req.url))
+    return NextResponse.redirect(new URL('/dashboard/onboarding', req.url))
   }
 
   return NextResponse.next()
