@@ -5,22 +5,17 @@ import { User } from '@/lib/models/User'
 import { auth } from '@/lib/auth'
 import {sendEmail} from '@/lib/email'
 
-
-
-
-
-
-
-
 export async function POST(req: Request) {
   try {
     await connectDB()
 
     const session = await auth()
-    if (!session?.user?.id) {
+    if (!session?.user?.id || !session?.user?.email) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
+    const userEmail = session.user.email
+    const userName = session.user.name ?? 'there'
     const { name, action } = await req.json()
 
     if (!name) {
@@ -55,11 +50,11 @@ export async function POST(req: Request) {
 
       try {
         await sendEmail(
-          session.user.email,
+          userEmail,
           `Welcome to ${newOrg.name}!`,
           `
           <h1>Welcome to ${newOrg.name}!</h1>
-          <p>Hi ${session.user.name},</p>
+          <p>Hi ${userName},</p>
           <p>You've successfully created the organisation <strong>${newOrg.name}</strong>.</p>
           <p>Start by inviting your team members and raising issues.</p>
           `
@@ -85,11 +80,11 @@ export async function POST(req: Request) {
 
       try {
         await sendEmail(
-          session.user.email,
+          userEmail,
           `Welcome to ${org.name}!`,
           `
           <h1>Welcome to ${org.name}!</h1>
-          <p>Hi ${session.user.name},</p>
+          <p>Hi ${userName},</p>
           <p>You've successfully joined the organisation <strong>${org.name}</strong>.</p>
           <p>Check your dashboard to see assigned issues and collaborate with your team.</p>
           `

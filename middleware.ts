@@ -1,14 +1,16 @@
 import { auth } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 
+export const runtime = 'nodejs'
+
 export default auth((req) => {
   const session = req.auth
   const pathname = req.nextUrl.pathname
 
-  const publicPaths = ['/login', '/signup', '/invite']
-  const isPublic = publicPaths.some((p) => pathname.startsWith(p))
+  const publicPaths = ['/', '/login', '/signup', '/invite']
+  const isPublic = publicPaths.some((p) => pathname === p || (p !== '/' && pathname.startsWith(p)))
 
-  // Not logged in — redirect to login
+  // Not logged in — only allow public pages
   if (!session && !isPublic) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
@@ -29,5 +31,5 @@ export default auth((req) => {
 })
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth).*)'],
 }
