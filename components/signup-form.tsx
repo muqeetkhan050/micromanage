@@ -1,5 +1,5 @@
 'use client'
-import { useRouter } from 'next/navigation' 
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -21,8 +21,9 @@ import { Input } from '@/components/ui/input'
 
 export function SignupForm({
   className,
+  onSuccess,
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<'div'> & { onSuccess?: () => void }) {
   const router = useRouter()
 
   const [name, setName] = useState('')
@@ -30,7 +31,7 @@ export function SignupForm({
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -53,8 +54,12 @@ export function SignupForm({
     const data = await res.json()
 
     if (res.ok) {
-      // After signup, go to login so they can sign in
-      router.push('/login')
+      alert('Account created! Please log in.')
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        router.push('/login')
+      }
     } else {
       alert(data.message)
     }

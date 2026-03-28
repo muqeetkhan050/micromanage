@@ -1,8 +1,9 @@
 'use client'
 import * as React from 'react'
-import { GalleryVerticalEnd } from 'lucide-react'
+import { GalleryVerticalEnd, LogOut } from 'lucide-react'
+import { signOut } from 'next-auth/react'
 import { NavMain } from '@/components/nav-main'
-import { SidebarOptInForm } from '@/components/sidebar-opt-in-form'
+import { Button } from '@/components/ui/button'
 import {
   Sidebar,
   SidebarContent,
@@ -154,7 +155,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <div className="p-1">
-          <SidebarOptInForm />
+          <Button
+            className="w-full"
+            onClick={() => signOut({ callbackUrl: '/login' })}
+          >
+            <LogOut className="size-4" />
+            Logout
+          </Button>
         </div>
       </SidebarFooter>
       <SidebarRail />

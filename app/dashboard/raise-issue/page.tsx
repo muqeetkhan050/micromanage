@@ -239,7 +239,7 @@ export default function RaiseIssuePage() {
         />
 
         {/* SHADCN SELECT FOR CREATE FORM */}
-        <Select value={assignedUser} onValueChange={setAssignedUser}>
+        <Select value={assignedUser || undefined} onValueChange={setAssignedUser}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Assign user" />
           </SelectTrigger>
@@ -260,12 +260,58 @@ export default function RaiseIssuePage() {
         </Button>
       </form>
 
+      {/* ---------------- EDIT DIALOG (outside table to avoid portal re-render issues) ---------------- */}
+      {editingIssue && (
+        <Dialog
+          open={true}
+          onOpenChange={(open) => { if (!open) setEditingIssue(null) }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Issue</DialogTitle>
+              <DialogDescription>
+                Update title and description
+              </DialogDescription>
+            </DialogHeader>
+            <form
+              onSubmit={handleEditSubmit}
+              className="flex flex-col gap-4"
+            >
+              <Input
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                required
+              />
+              <textarea
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                className="border p-2 rounded h-32"
+                required
+              />
+              <DialogFooter className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setEditingIssue(null)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-black text-white">
+                  Save
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+
       {/* ---------------- ISSUES TABLE ---------------- */}
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead>Assign</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -275,11 +321,23 @@ export default function RaiseIssuePage() {
             <TableRow key={issue._id}>
               <TableCell>{issue.title}</TableCell>
               <TableCell>{issue.description}</TableCell>
+              <TableCell>
+                <span className="flex items-center gap-2 text-sm">
+                  <span
+                    className={`inline-block size-2 rounded-full ${
+                      issue.assignedTo
+                        ? 'bg-green-500 shadow-[0_0_6px_2px_rgba(34,197,94,0.5)]'
+                        : 'bg-red-500 shadow-[0_0_6px_2px_rgba(239,68,68,0.5)]'
+                    }`}
+                  />
+                  {issue.assignedTo ? 'Assigned' : 'Not Assigned'}
+                </span>
+              </TableCell>
 
               {/* ROW-LEVEL SHADCN SELECT */}
               <TableCell>
                 <Select
-                  value={issue.assignedTo || ''}
+                  value={issue.assignedTo || undefined}
                   onValueChange={(userId) => assignIssue(issue._id, userId)}
                 >
                   <SelectTrigger className="w-full max-w-48">
@@ -310,51 +368,6 @@ export default function RaiseIssuePage() {
                 >
                   Edit
                 </Button>
-
-                {/* EDIT MODAL */}
-                {editingIssue && editingIssue._id === issue._id && (
-                  <Dialog
-                    open={true}
-                    onOpenChange={(open) => !open && setEditingIssue(null)}
-                  >
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Edit Issue</DialogTitle>
-                        <DialogDescription>
-                          Update title and description
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form
-                        onSubmit={handleEditSubmit}
-                        className="flex flex-col gap-4"
-                      >
-                        <Input
-                          value={editTitle}
-                          onChange={(e) => setEditTitle(e.target.value)}
-                          required
-                        />
-                        <textarea
-                          value={editDescription}
-                          onChange={(e) => setEditDescription(e.target.value)}
-                          className="border p-2 rounded h-32"
-                          required
-                        />
-                        <DialogFooter className="flex justify-end gap-2">
-                          <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={() => setEditingIssue(null)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button type="submit" className="bg-black text-white">
-                            Save
-                          </Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                )}
 
                 {/* DELETE BUTTON */}
                 <Button
