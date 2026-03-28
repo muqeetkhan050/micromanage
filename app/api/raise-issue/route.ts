@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { connectDB } from '@/lib/db'
 import { Issue } from '@/lib/models/issue'
 import { auth } from '@/lib/auth'
+import { sanitize } from '@/lib/sanitize'
 
 export async function POST(req: Request) {
   try {
@@ -30,8 +31,8 @@ export async function POST(req: Request) {
     await connectDB()
 
     const issue = await Issue.create({
-      title,
-      description,
+      title: sanitize(title),
+      description: sanitize(description),
       assignedTo: assignedTo || null,
       organizationId: session.user.organisationId,
       createdBy: session.user.id,

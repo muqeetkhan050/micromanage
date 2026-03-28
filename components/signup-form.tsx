@@ -34,6 +34,11 @@ export function SignupForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters')
+      return
+    }
+
     if (password !== confirmPassword) {
       alert('Passwords do not match')
       return

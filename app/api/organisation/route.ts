@@ -4,6 +4,7 @@ import { Organisation } from '@/lib/models/Organisation'
 import { User } from '@/lib/models/User'
 import { auth } from '@/lib/auth'
 import {sendEmail} from '@/lib/email'
+import { sanitize } from '@/lib/sanitize'
 
 export async function POST(req: Request) {
   try {
@@ -16,7 +17,9 @@ export async function POST(req: Request) {
 
     const userEmail = session.user.email
     const userName = session.user.name ?? 'there'
-    const { name, action } = await req.json()
+    const body = await req.json()
+    const name = sanitize(body.name)
+    const action = body.action
 
     if (!name) {
       return NextResponse.json(

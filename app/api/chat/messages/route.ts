@@ -1,27 +1,21 @@
 import { NextRequest, NextResponse } from "next/server"
 import { connectDB } from "@/lib/db"
 import Message from "@/lib/models/message"
-import mongoose from "mongoose"
+import { auth } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const orgId = searchParams.get("orgId")
+    const session = await auth()
 
-    if (!orgId) {
-      return NextResponse.json({ error: "orgId is required" }, { status: 400 })
+    if (!session?.user?.id || !session?.user?.organisationId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Validate it is a valid ObjectId before querying
-    if (!mongoose.Types.ObjectId.isValid(orgId)) {
-      return NextResponse.json({ error: "Invalid orgId" }, { status: 400 })
-    }
+    const orgId = session.user.organisationId
 
     await connectDB()
 
-    const messages = await Message.find({
-      orgId: new mongoose.Types.ObjectId(orgId)
-    })
+    const messages = await Message.find({ orgId })
       .sort({ createdAt: 1 })
       .limit(50)
       .lean()
