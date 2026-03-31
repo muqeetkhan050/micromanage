@@ -110,6 +110,10 @@ const data = {
       url: '/dashboard/profile',
     },
     {
+      title: 'Reminder',
+      url: '/dashboard/reminder',
+    },
+    {
       title: 'Chat',
       url: '/dashboard/chat',
     },
