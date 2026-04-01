@@ -1,11 +1,30 @@
-
-
 'use client'
+
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface CalendarEvent {
   id: string
@@ -16,7 +35,7 @@ interface CalendarEvent {
   borderColor?: string
   extendedProps?: {
     description?: string
-    reminderTime?: number // minutes before event
+    reminderTime?: number
     category?: string
   }
 }
@@ -24,84 +43,92 @@ interface CalendarEvent {
 export default function Reminder() {
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [showModal, setShowModal] = useState(false)
-  const [selectedDate, setSelectedDate] = useState<string>('')
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [isEditMode, setIsEditMode] = useState(false)
+  const [loading, setLoading] = useState(true)
 
-  // Form states
   const [eventTitle, setEventTitle] = useState('')
   const [eventDescription, setEventDescription] = useState('')
   const [eventStart, setEventStart] = useState('')
   const [eventEnd, setEventEnd] = useState('')
   const [eventCategory, setEventCategory] = useState('meeting')
-  const [reminderTime, setReminderTime] = useState(30) // 30 minutes before
+  const [reminderTime, setReminderTime] = useState(30)
 
-  // Load events from localStorage on mount
-  useEffect(() => {
-    const savedEvents = localStorage.getItem('calendarEvents')
-    if (savedEvents) {
-      setEvents(JSON.parse(savedEvents))
+  // Fetch events from database
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch('/api/reminder')
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.message || 'Failed to load events')
+        return
+      }
+      if (Array.isArray(data)) {
+        const mapped: CalendarEvent[] = data.map((e: any) => ({
+          id: e._id,
+          title: e.title,
+          start: e.start,
+          end: e.end || undefined,
+          backgroundColor: e.backgroundColor,
+          borderColor: e.borderColor,
+          extendedProps: {
+            description: e.description,
+            reminderTime: e.reminderTime,
+            category: e.category,
+          },
+        }))
+        setEvents(mapped)
+      }
+    } catch {
+      toast.error('Failed to load events')
+    } finally {
+      setLoading(false)
     }
-    
-    // Request notification permission
+  }
+
+  useEffect(() => {
+    fetchEvents()
+
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission()
     }
   }, [])
 
-  // Save events to localStorage whenever they change
-  useEffect(() => {
-    if (events.length > 0) {
-      localStorage.setItem('calendarEvents', JSON.stringify(events))
-    }
-  }, [events])
-
   // Check for upcoming reminders
   useEffect(() => {
     const checkReminders = setInterval(() => {
       const now = new Date()
-      
-      events.forEach(event => {
+      events.forEach((event) => {
         const eventTime = new Date(event.start)
         const reminderMinutes = event.extendedProps?.reminderTime || 30
-        const reminderTime = new Date(eventTime.getTime() - reminderMinutes * 60000)
-        
-        // If reminder time is within the next minute
-        const timeDiff = reminderTime.getTime() - now.getTime()
+        const reminderAt = new Date(eventTime.getTime() - reminderMinutes * 60000)
+        const timeDiff = reminderAt.getTime() - now.getTime()
         if (timeDiff > 0 && timeDiff < 60000) {
-          showNotification(event)
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification(`Reminder: ${event.title}`, {
+              body: `Starting in ${reminderMinutes} minutes\n${event.extendedProps?.description || ''}`,
+              tag: event.id,
+            })
+          }
         }
       })
-    }, 60000) // Check every minute
-
+    }, 60000)
     return () => clearInterval(checkReminders)
   }, [events])
 
-  const showNotification = (event: CalendarEvent) => {
-    if ('Notification' in window && Notification.permission === 'granted') {
-      const reminderMinutes = event.extendedProps?.reminderTime || 30
-      new Notification(`Reminder: ${event.title}`, {
-        body: `Starting in ${reminderMinutes} minutes\n${event.extendedProps?.description || ''}`,
-        icon: '/calendar-icon.png', // Add your icon path
-        tag: event.id // Prevents duplicate notifications
-      })
-    }
-  }
-
   const getCategoryColor = (category: string) => {
-    const colors: { [key: string]: { bg: string; border: string } } = {
-      meeting: { bg: '#3b82f6', border: '#2563eb' }, // Blue
-      deadline: { bg: '#ef4444', border: '#dc2626' }, // Red
-      milestone: { bg: '#f59e0b', border: '#d97706' }, // Orange
-      review: { bg: '#8b5cf6', border: '#7c3aed' }, // Purple
-      sprint: { bg: '#10b981', border: '#059669' }, // Green
-      personal: { bg: '#6366f1', border: '#4f46e5' }, // Indigo
+    const colors: Record<string, { bg: string; border: string }> = {
+      meeting: { bg: '#3b82f6', border: '#2563eb' },
+      deadline: { bg: '#ef4444', border: '#dc2626' },
+      milestone: { bg: '#f59e0b', border: '#d97706' },
+      review: { bg: '#8b5cf6', border: '#7c3aed' },
+      sprint: { bg: '#10b981', border: '#059669' },
+      personal: { bg: '#6366f1', border: '#4f46e5' },
     }
     return colors[category] || colors.meeting
   }
 
   const handleDateClick = (info: any) => {
-    setSelectedDate(info.dateStr)
     setEventStart(info.dateStr + 'T09:00')
     setEventEnd(info.dateStr + 'T10:00')
     setIsEditMode(false)
@@ -119,13 +146,12 @@ export default function Reminder() {
       end: event.endStr,
       backgroundColor: event.backgroundColor,
       borderColor: event.borderColor,
-      extendedProps: event.extendedProps
+      extendedProps: event.extendedProps,
     })
-    
     setEventTitle(event.title)
     setEventDescription(event.extendedProps.description || '')
-    setEventStart(event.startStr)
-    setEventEnd(event.endStr || event.startStr)
+    setEventStart(event.startStr?.slice(0, 16) || '')
+    setEventEnd(event.endStr?.slice(0, 16) || '')
     setEventCategory(event.extendedProps.category || 'meeting')
     setReminderTime(event.extendedProps.reminderTime || 30)
     setIsEditMode(true)
@@ -139,50 +165,75 @@ export default function Reminder() {
     setReminderTime(30)
   }
 
-  const handleSaveEvent = () => {
+  const handleSaveEvent = async () => {
     if (!eventTitle || !eventStart) return
 
     const colors = getCategoryColor(eventCategory)
-    
-    const newEvent: CalendarEvent = {
-      id: isEditMode ? selectedEvent!.id : Date.now().toString(),
+    const payload = {
       title: eventTitle,
+      description: eventDescription,
       start: eventStart,
       end: eventEnd || eventStart,
+      category: eventCategory,
+      reminderTime,
       backgroundColor: colors.bg,
       borderColor: colors.border,
-      extendedProps: {
-        description: eventDescription,
-        reminderTime: reminderTime,
-        category: eventCategory
-      }
     }
 
-    if (isEditMode) {
-      // Update existing event
-      setEvents(events.map(e => e.id === newEvent.id ? newEvent : e))
-    } else {
-      // Add new event
-      setEvents([...events, newEvent])
+    try {
+      if (isEditMode && selectedEvent) {
+        const res = await fetch(`/api/reminder/${selectedEvent.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Update failed')
+        toast.success('Event updated')
+      } else {
+        const res = await fetch('/api/reminder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Create failed')
+        toast.success('Event created')
+      }
+      fetchEvents()
+    } catch {
+      toast.error('Failed to save event')
     }
 
     setShowModal(false)
     resetForm()
   }
 
-  const handleDeleteEvent = () => {
-    if (selectedEvent) {
-      setEvents(events.filter(e => e.id !== selectedEvent.id))
-      setShowModal(false)
-      resetForm()
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent) return
+    try {
+      const res = await fetch(`/api/reminder/${selectedEvent.id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Delete failed')
+      toast.success('Event deleted')
+      fetchEvents()
+    } catch {
+      toast.error('Failed to delete event')
     }
+    setShowModal(false)
+    resetForm()
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6 flex items-center justify-center">
+        <p className="text-gray-500">Loading calendar...</p>
+      </div>
+    )
   }
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">GEO Project Calendar</h1>
-        <p className="text-gray-600">Team 62 - Flight Centre GEO Research</p>
+        <h1 className="text-3xl font-bold mb-2">Calendar & Reminders</h1>
+        <p className="text-gray-600">Click on a date to add an event</p>
       </div>
 
       {/* Legend */}
@@ -193,12 +244,12 @@ export default function Reminder() {
           milestone: 'Milestones',
           review: 'Reviews',
           sprint: 'Sprints',
-          personal: 'Personal'
+          personal: 'Personal',
         }).map(([key, label]) => {
           const color = getCategoryColor(key)
           return (
             <div key={key} className="flex items-center gap-2">
-              <div 
+              <div
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: color.bg }}
               />
@@ -215,7 +266,7 @@ export default function Reminder() {
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay',
           }}
           events={events}
           dateClick={handleDateClick}
@@ -226,149 +277,136 @@ export default function Reminder() {
           eventTimeFormat={{
             hour: '2-digit',
             minute: '2-digit',
-            hour12: true
+            hour12: true,
           }}
         />
       </div>
 
       {/* Modal for Add/Edit Event */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              {isEditMode ? 'Edit Event' : 'Add New Event'}
-            </h2>
+      <Dialog
+        open={showModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowModal(false)
+            resetForm()
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isEditMode ? 'Edit Event' : 'Add New Event'}</DialogTitle>
+            <DialogDescription>
+              {isEditMode ? 'Update event details' : 'Fill in the details to create an event'}
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="space-y-4">
-              {/* Event Title */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Event Title *
-                </label>
-                <input
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                  placeholder="e.g., Sprint Planning Meeting"
-                />
-              </div>
+          <div className="flex flex-col gap-4">
+            <Input
+              value={eventTitle}
+              onChange={(e) => setEventTitle(e.target.value)}
+              placeholder="Event title"
+              required
+            />
 
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Category
-                </label>
-                <select
-                  value={eventCategory}
-                  onChange={(e) => setEventCategory(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                >
-                  <option value="meeting">Team Meeting</option>
-                  <option value="deadline">Deadline</option>
-                  <option value="milestone">Milestone</option>
-                  <option value="review">Review/Feedback</option>
-                  <option value="sprint">Sprint Event</option>
-                  <option value="personal">Personal</option>
-                </select>
-              </div>
+            <Select value={eventCategory} onValueChange={setEventCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Category</SelectLabel>
+                  <SelectItem value="meeting">Team Meeting</SelectItem>
+                  <SelectItem value="deadline">Deadline</SelectItem>
+                  <SelectItem value="milestone">Milestone</SelectItem>
+                  <SelectItem value="review">Review / Feedback</SelectItem>
+                  <SelectItem value="sprint">Sprint Event</SelectItem>
+                  <SelectItem value="personal">Personal</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
-              {/* Start Time */}
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  Start Time *
-                </label>
-                <input
+                <label className="text-sm font-medium mb-1 block">Start *</label>
+                <Input
                   type="datetime-local"
                   value={eventStart}
                   onChange={(e) => setEventStart(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
+                  required
                 />
               </div>
-
-              {/* End Time */}
               <div>
-                <label className="block text-sm font-medium mb-1">
-                  End Time
-                </label>
-                <input
+                <label className="text-sm font-medium mb-1 block">End</label>
+                <Input
                   type="datetime-local"
                   value={eventEnd}
                   onChange={(e) => setEventEnd(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
                 />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Description
-                </label>
-                <textarea
-                  value={eventDescription}
-                  onChange={(e) => setEventDescription(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                  rows={3}
-                  placeholder="Add meeting agenda, notes, or details..."
-                />
-              </div>
-
-              {/* Reminder */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Reminder
-                </label>
-                <select
-                  value={reminderTime}
-                  onChange={(e) => setReminderTime(Number(e.target.value))}
-                  className="w-full border border-gray-300 rounded px-3 py-2"
-                >
-                  <option value={0}>No reminder</option>
-                  <option value={5}>5 minutes before</option>
-                  <option value={15}>15 minutes before</option>
-                  <option value={30}>30 minutes before</option>
-                  <option value={60}>1 hour before</option>
-                  <option value={1440}>1 day before</option>
-                  <option value={2880}>2 days before</option>
-                  <option value={10080}>1 week before</option>
-                </select>
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-2 pt-4">
-                <button
-                  onClick={handleSaveEvent}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  disabled={!eventTitle || !eventStart}
-                >
-                  {isEditMode ? 'Update' : 'Add'} Event
-                </button>
-                
-                {isEditMode && (
-                  <button
-                    onClick={handleDeleteEvent}
-                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                )}
-                
-                <button
-                  onClick={() => {
-                    setShowModal(false)
-                    resetForm()
-                  }}
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
               </div>
             </div>
+
+            <textarea
+              value={eventDescription}
+              onChange={(e) => setEventDescription(e.target.value)}
+              placeholder="Description (optional)"
+              className="border p-2 rounded h-24"
+              rows={3}
+            />
+
+            <Select
+              value={String(reminderTime)}
+              onValueChange={(val) => setReminderTime(Number(val))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Set reminder" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Reminder</SelectLabel>
+                  <SelectItem value="0">No reminder</SelectItem>
+                  <SelectItem value="5">5 minutes before</SelectItem>
+                  <SelectItem value="15">15 minutes before</SelectItem>
+                  <SelectItem value="30">30 minutes before</SelectItem>
+                  <SelectItem value="60">1 hour before</SelectItem>
+                  <SelectItem value="1440">1 day before</SelectItem>
+                  <SelectItem value="2880">2 days before</SelectItem>
+                  <SelectItem value="10080">1 week before</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-      )}
+
+          <DialogFooter className="flex justify-end gap-2">
+            {isEditMode && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDeleteEvent}
+              >
+                Delete
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => {
+                setShowModal(false)
+                resetForm()
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              className="bg-black text-white"
+              onClick={handleSaveEvent}
+              disabled={!eventTitle || !eventStart}
+            >
+              {isEditMode ? 'Save' : 'Add Event'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
-
-

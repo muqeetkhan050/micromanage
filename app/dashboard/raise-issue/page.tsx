@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
@@ -36,15 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts'
+const LazyChart = lazy(() => import('./issue-chart'))
 
 interface Issue {
   _id: string
@@ -72,6 +64,7 @@ export default function RaiseIssuePage() {
   const [editDescription, setEditDescription] = useState('')
 
   const [error, setError] = useState('')
+  const [issuesLoaded, setIssuesLoaded] = useState(false)
 
   /* ---------------- FETCH ISSUES ---------------- */
   const fetchIssues = async () => {
@@ -90,6 +83,8 @@ export default function RaiseIssuePage() {
     } catch (err) {
       console.error(err)
       setIssues([])
+    } finally {
+      setIssuesLoaded(true)
     }
   }
 
@@ -383,19 +378,17 @@ export default function RaiseIssuePage() {
       </Table>
 
       {/* ---------------- CHART ---------------- */}
-      <div className="bg-white p-6 rounded-md shadow-md">
+      <div className="bg-white p-6 rounded-md shadow-md" style={{ minHeight: 380 }}>
         <h2 className="text-lg font-semibold mb-4">
           Issues Raised — {now.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="day" fontSize={12} />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="issues" fill="#8884d8" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {issuesLoaded ? (
+          <Suspense fallback={<div className="h-[300px] bg-gray-100 rounded animate-pulse" />}>
+            <LazyChart chartData={chartData} />
+          </Suspense>
+        ) : (
+          <div className="h-[300px] bg-gray-100 rounded animate-pulse" />
+        )}
       </div>
     </div>
   )
