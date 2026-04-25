@@ -1,27 +1,16 @@
 
 import NextAuth from 'next-auth'
-import GitHub from 'next-auth/providers/github'
-import Google from 'next-auth/providers/google'
+import { authConfig } from '@/auth.config'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { connectDB } from '@/lib/db'
 import { User } from '@/lib/models/User'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
-
-  session: { strategy: 'jwt' },
+  ...authConfig,
 
   providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID ?? '',
-      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? '',
-    }),
-
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
+    ...authConfig.providers,
 
     Credentials({
       credentials: {
@@ -120,10 +109,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.organisationId = token.organisationId as string | null
       return session
     },
-  },
-
-  pages: {
-    signIn: '/login',
-    error: '/login',
   },
 })
